@@ -1,27 +1,35 @@
-require('dotenv').config(); // 1. Load environment variables first!
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();
 
-// 2. Import your routes
-// const taskRoutes = require('./routes/taskRoutes');
+// Import Routes
+const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// 3. Middleware
-app.use(cors()); // Allow cross-origin requests
-app.use(express.json()); // Allow the server to read JSON in the request body
+// Middleware
+app.use(cors());
+app.use(express.json()); 
 
-// 4. Connect to MongoDB using the variable from .env
-const URI = process.env.MONGO_URI;
-mongoose.connect(URI)
-    .then(() => console.log("Database connection established! ✅"))
-    .catch(err => console.log("Database connection error: ", err));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB Connected Successfully ✅"))
+    .catch(err => console.log("Database Connection Error ❌:", err));
 
-// 5. Use the routes
+// Use Routes
 app.use('/api/tasks', taskRoutes);
 
-const PORT = process.env.PORT || 5000;
+// Basic Health Check Route
+app.get('/', (req, res) => {
+    res.send('Sprint-Sync Server is running!');
+});
+
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is sprinting on port ${PORT}`);
 });
