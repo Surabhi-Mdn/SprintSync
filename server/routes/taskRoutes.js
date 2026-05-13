@@ -27,4 +27,28 @@ router.post('/', async (req, res) => {
     }
 });
 
+// 3. UPDATE a task status or title
+router.put('/:id', async (req, res) => {
+    try {
+        const updatedTask = await Task.findByIdAndUpdate(
+            req.params.id, 
+            { $set: req.body }, 
+            { new: true } // This returns the modified document rather than the original
+        );
+        res.json(updatedTask);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// 4. DELETE a task
+router.delete('/:id', async (req, res) => {
+    try {
+        await Task.findByIdAndDelete(req.params.id);
+        res.json({ message: "Task deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;
